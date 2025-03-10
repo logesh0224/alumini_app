@@ -54,8 +54,10 @@ const AlumniLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" 
+     style={{
+       backgroundImage: 'linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%)'
+     }}>      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div className="text-center">
           <div className="flex justify-center">
             <GraduationCap className="h-12 w-12 text-indigo-600" />
