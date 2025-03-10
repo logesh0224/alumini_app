@@ -12,6 +12,7 @@ const studentRoutes = require('./routes/studentRoutes');
 const alumniRoutes = require('./routes/aluminiRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+const path = require("path");
 
 const app = express();
 
@@ -40,6 +41,11 @@ app.use((err, req, res, next) => {
     success: false, 
     message: 'Server Error'
   });
+});
+app.use(express.static(path.join(__dirname,"../../frontend/dist")))
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
