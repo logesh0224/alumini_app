@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Card, Button, Typography, Row, Col } from 'antd';
 
 const { Title, Text } = Typography;
@@ -37,6 +37,7 @@ const jobs = [
     description: 'Looking for a creative UI/UX designer to enhance user experiences.',
   },
 ];
+ {/* @ts-ignore */}
 
 const JobList = ({ filters }) => {
   const filteredJobs = jobs.filter((job) => {

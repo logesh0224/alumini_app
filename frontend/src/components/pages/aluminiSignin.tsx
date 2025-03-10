@@ -1,0 +1,133 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { GraduationCap, Mail, Lock } from 'lucide-react';
+import axios from 'axios';
+
+const AlumniLogin = () => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [pendingApproval, setPendingApproval] = useState(false);
+  const navigate = useNavigate();
+
+  const { email, password } = formData;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setPendingApproval(false);
+    setLoading(true);
+
+    try {
+      const res = await axios.post('http://localhost:5000/api/alumni/login', {
+        email,
+        password
+      });
+
+      if (res.data.token) {
+        // Store the token and user data in localStorage
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('userRole', 'alumni');
+        localStorage.setItem('userData', JSON.stringify(res.data.data));
+        
+        // Redirect to alumni dashboard
+        navigate('/alumni/dashboard');
+      }
+    } catch (err) {
+        //@ts-ignore
+      if (err.response?.data?.message === 'Your account is pending approval by an administrator') {
+        setPendingApproval(true);
+      } else {
+          //@ts-ignore
+        setError(err.response?.data?.message || 'Login failed');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+        <div className="text-center">
+          <div className="flex justify-center">
+            <GraduationCap className="h-12 w-12 text-indigo-600" />
+          </div>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Alumni Login</h2>
+        </div>
+
+        {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>}
+        
+        {pendingApproval && (
+          <div className="mb-4 p-3 bg-yellow-100 text-yellow-800 rounded">
+            <p className="font-medium">Your account is pending approval</p>
+            <p>An administrator will review your registration. You'll be able to login once approved.</p>
+          </div>
+        )}
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div className="relative">
+              <label htmlFor="email" className="sr-only">Email address</label>
+              <Mail className="h-5 w-5 text-gray-400 absolute top-3 left-3" />
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={handleChange}
+                className="appearance-none rounded-lg relative block w-full pl-10 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email address"
+              />
+            </div>
+            <div className="relative">
+              <label htmlFor="password" className="sr-only">Password</label>
+              <Lock className="h-5 w-5 text-gray-400 absolute top-3 left-3" />
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={password}
+                onChange={handleChange}
+                className="appearance-none rounded-lg relative block w-full pl-10 pr-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+              disabled={loading}
+            >
+              {loading ? 'Logging in...' : 'Login as Alumni'}
+            </button>
+          </div>
+
+          <div className="mt-4 text-center text-gray-600">
+            Don't have an account? <Link to="/alumni/register" className="text-blue-500">Register</Link>
+          </div>
+        </form>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+            Home
+          </button>
+      </div>
+    </div>
+  );
+};
+
+export default AlumniLogin;

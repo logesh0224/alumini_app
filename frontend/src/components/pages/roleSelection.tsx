@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Card, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,16 +10,16 @@ const RoleSelection = () => {
   const roles = [
     { name: 'student', description: 'Explore job opportunities' },
     { name: 'alumni', description: 'Post and share jobs' },
-    { name: 'admin', description: 'Manage and approve users' }
+    { name: 'admin', description: 'Manage and approve users' },
   ];
- //@ts-ignore
+//@ts-ignore
   const handleRoleClick = (role) => {
     if (role === 'alumni') {
-      navigate('/alumni-signup');
+      navigate('/alumni/register'); // Navigate to alumni signup
     } else if (role === 'admin') {
-      navigate('/admin-login');
-    } else {
-      navigate('/student-login');
+      navigate('/admin/login'); // Navigate to admin login
+    } else if(role === 'student') {
+      navigate('/student/signin'); // Navigate to student login
     }
   };
 

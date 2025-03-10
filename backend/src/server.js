@@ -1,14 +1,17 @@
-// backend/server.js
+// server.js
 const express = require('express');
-const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const dotenv = require('dotenv');
 
 // Load environment variables
 dotenv.config();
 
-// Connect to database
-connectDB();
+// Import route files
+const studentRoutes = require('./routes/studentRoutes');
+const alumniRoutes = require('./routes/aluminiRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const jobRoutes = require('./routes/jobRoutes');
 
 const app = express();
 
@@ -16,24 +19,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', require('./routes/authroutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
-app.use('/api/alumni', require('./routes/aluminiRoutes'));
-app.use('/api/student', require('./routes/studentRoutes'));
-app.use('/api/jobs', require('./routes/jobRoutes'));
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB connection error:', err));
 
-// Error handling middleware
+// Mount routes
+app.use('/api/students', studentRoutes);
+app.use('/api/alumni', alumniRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/jobs', jobRoutes);
+
+// Error handler middleware
 app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  res.status(statusCode).json({
-    success: false,
-    error: err.message || 'Server Error',
+  console.error(err.stack);
+  res.status(500).json({
+    success: false, 
+    message: 'Server Error'
   });
 });
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

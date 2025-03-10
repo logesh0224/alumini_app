@@ -1,4 +1,4 @@
-// backend/models/Alumni.js
+// backend/models/alumini.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const AlumniSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please add a name'],
+    required: [true, 'Please add a name']
   },
   email: {
     type: String,
@@ -14,43 +14,43 @@ const AlumniSchema = new mongoose.Schema({
     unique: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please add a valid email',
-    ],
+      'Please add a valid email'
+    ]
   },
   password: {
     type: String,
     required: [true, 'Please add a password'],
     minlength: 6,
-    select: false,
-  },
-  role: {
-    type: String,
-    default: 'alumni',
+    select: false
   },
   graduationYear: {
     type: Number,
-    required: [true, 'Please add graduation year'],
+    required: [true, 'Please add graduation year']
   },
   company: {
     type: String,
-    required: [true, 'Please add current company'],
+    required: [true, 'Please add current company']
   },
   position: {
     type: String,
-    required: [true, 'Please add current position'],
+    required: [true, 'Please add current position']
   },
   isApproved: {
     type: Boolean,
-    default: false,
+    default: false
+  },
+  role: {
+    type: String,
+    default: 'alumni'
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-  },
+    default: Date.now
+  }
 });
 
 // Encrypt password using bcrypt
-AlumniSchema.pre('save', async function (next) {
+AlumniSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     next();
   }
@@ -60,14 +60,16 @@ AlumniSchema.pre('save', async function (next) {
 });
 
 // Sign JWT and return
-AlumniSchema.methods.getSignedJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
-  });
+AlumniSchema.methods.getSignedJwtToken = function() {
+  return jwt.sign(
+    { id: this._id, role: this.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRE }
+  );
 };
 
 // Match user entered password to hashed password in database
-AlumniSchema.methods.matchPassword = async function (enteredPassword) {
+AlumniSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

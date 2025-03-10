@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Input, Select, Button, Row, Col } from 'antd';
 
 const { Option } = Select;
 
+ {/* @ts-ignore */}
 const JobFilter = ({ onFilter }) => {
   const [filters, setFilters] = useState({
     title: '',
     location: '',
     type: '',
   });
-
+ {/* @ts-ignore */}
   const handleChange = (key, value) => {
     setFilters({ ...filters, [key]: value });
   };

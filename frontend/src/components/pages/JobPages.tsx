@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Typography, Row, Col } from 'antd';
+import { useState } from 'react';
+import { Layout, Typography, Row, } from 'antd';
 import JobFilter from './jobFilter';
 import JobList from './jobList';
 
@@ -13,6 +13,8 @@ const JobsPage = () => {
     type: '',
   });
 
+
+  //@ts-ignore
   const handleFilter = (newFilters) => {
     setFilters(newFilters);
   };
