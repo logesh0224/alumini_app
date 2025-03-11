@@ -1,6 +1,6 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios'; // Make sure axios is imported
 
 const PostJob = () => {
   const [formData, setFormData] = useState({
@@ -40,8 +40,7 @@ const PostJob = () => {
     jobType, 
     deadline 
   } = formData;
-
-  //@ts-ignore
+//@ts-ignore
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -60,28 +59,45 @@ const PostJob = () => {
         return;
       }
 
-    
+      // Configure request headers
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      };
 
-      // const res = await axios.post('http://localhost:5000/api/jobs', formData, config);
+      console.log('Submitting job data:', formData);
+      console.log('Using token:', token);
 
-      setSuccess('Job posted successfully!');
-      // Reset form
-      setFormData({
-        title: '',
-        company: company, // Keep the company name
-        location: 'Bangalore',
-        description: '',
-        requirements: '',
-        salary: '2-3 LPA',
-        jobType: 'Full-time',
-        deadline: ''
-      });
+      // Make API call to post the job
+      const response = await axios.post('http://localhost:5000/api/jobs', formData, config);
+      
+      console.log('API Response:', response);
 
-      // Redirect to my jobs page after 2 seconds
-      setTimeout(() => {
-        navigate('/alumni/my-jobs');
-      }, 2000);
+      // Check if the API call was successful
+      if (response && response.data) {
+        setSuccess('Job posted successfully!');
+        
+        // Reset form but keep the company name
+        setFormData({
+          title: '',
+          company: company,
+          location: 'Bangalore',
+          description: '',
+          requirements: '',
+          salary: '2-3 LPA',
+          jobType: 'Full-time',
+          deadline: ''
+        });
+
+        // Redirect to my jobs page after 2 seconds
+        setTimeout(() => {
+          navigate('/alumni/my-jobs');
+        }, 2000);
+      }
     } catch (err) {
+      console.error('Error posting job:', err);
       //@ts-ignore
       setError(err.response?.data?.message || 'Error posting job');
     } finally {
